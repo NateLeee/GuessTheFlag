@@ -10,14 +10,9 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            ForEach(0..<3) {_ in
-                HStack {
-                    Text("Hello World")
-                    Text("This is inside a stack")
-                    Text("This is inside a stack")
-                }
-            }
+        ZStack {
+            RadialGradient(gradient: Gradient(colors: [.blue, .black]), center: .center, startRadius: 20, endRadius: 200)
+            Text("Your content")
         }
     }
 }
