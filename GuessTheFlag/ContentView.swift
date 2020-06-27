@@ -13,20 +13,28 @@ struct ContentView: View {
     var correctAnswer = Int.random(in: 0...2)
     
     var body: some View {
-        VStack(spacing: 18) {
-            VStack {
-                Text("Tap the flag of").padding(.horizontal)
-                Text("\(countries[correctAnswer])")
-            }
-            
-            ForEach(0..<3) { index in
-                Button(action: {
-                    // Action here
-                }) {
-                    Image(self.countries[index]).renderingMode(.original)
+        ZStack {
+            Color.blue.edgesIgnoringSafeArea(.all)
+            VStack(spacing: 18) {
+                VStack {
+                    Text("Tap the flag of").padding(.horizontal)
+                        .foregroundColor(.white)
+                    Text("\(countries[correctAnswer])")
+                        .foregroundColor(.white)
                 }
+                
+                ForEach(0..<3) { index in
+                    Button(action: {
+                        // Action here
+                    }) {
+                        Image(self.countries[index])
+                            .renderingMode(.original)
+                            .aspectRatio(1.5, contentMode: .fill)
+                    }.padding(.bottom, 9)
+                }
+                
+                Spacer()
             }
-            
         }
     }
 }
