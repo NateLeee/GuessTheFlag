@@ -10,9 +10,13 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        ZStack {
-            LinearGradient(gradient: Gradient(colors: [.white, .black]), startPoint: .top, endPoint: .bottom)
-            Text("Your content")
+        Button(action: {
+            print("Edit button was tapped")
+        }) {
+            HStack(spacing: 9) {
+                Image(systemName: "pencil").renderingMode(.original)
+                Text("Edit")
+            }
         }
     }
 }
