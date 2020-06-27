@@ -17,13 +17,17 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            Color.blue.edgesIgnoringSafeArea(.all)
+            LinearGradient(gradient: Gradient(colors: [.blue, .black]), startPoint: .top, endPoint: .bottom)
+                .edgesIgnoringSafeArea(.all)
+            
             VStack(spacing: 18) {
                 VStack {
                     Text("Tap the flag of").padding(.horizontal)
                         .foregroundColor(.white)
                     Text("\(countries[correctAnswer])")
                         .foregroundColor(.white)
+                        .font(.largeTitle)
+                        .fontWeight(.black)
                 }
                 
                 ForEach(0..<3) { index in
@@ -34,8 +38,11 @@ struct ContentView: View {
                         Image(self.countries[index])
                             .renderingMode(.original)
                             .aspectRatio(1.5, contentMode: .fill)
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(Color.white, lineWidth: 1))
+                            .shadow(color: .gray, radius: 6)
+                            .padding(.bottom, 9)
                     }
-                    .padding(.bottom, 9)
                 }
                 
                 Spacer()
