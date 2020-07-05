@@ -37,13 +37,7 @@ struct ContentView: View {
                         // Action here
                         self.flagTapped(index)
                     }) {
-                        Image(self.countries[index])
-                            .renderingMode(.original)
-                            .aspectRatio(1.5, contentMode: .fill)
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(Color.white, lineWidth: 1))
-                            .shadow(color: .gray, radius: 6)
-                            .padding(.bottom, 9)
+                        FlagImage(countryName: self.countries[index])
                     }
                 }
                 
