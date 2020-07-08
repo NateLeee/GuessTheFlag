@@ -41,6 +41,7 @@ struct ContentView: View {
                     }) {
                         FlagImage(countryName: self.countries[index])
                             .opacity(self.decideOpacity(index))
+                            .animation(Animation.default)
                             .rotation3DEffect(Angle(degrees: self.correctAnswer == index ? 360 : 0), axis: (x: 0, y: 1, z: 0))
                             .animation(Animation.default)
                     }
@@ -54,7 +55,7 @@ struct ContentView: View {
         }
         .alert(isPresented: self.$showingAlert) { () -> Alert in
             Alert(title: Text("\(self.alertTitle)"), message: Text("\(alertMsg)"), dismissButton: .default(Text("Continue")) {
-                self.askQuestion()
+                self.anotherRound()
                 })
             
         }
@@ -65,7 +66,7 @@ struct ContentView: View {
         
         if number == correctAnswer {
             score += 1
-            askQuestion()
+            anotherRound()
         } else {
             alertTitle = "🚫Wrong"
             alertMsg = "Oops, it's the flag of \(countries[number])."
@@ -75,12 +76,13 @@ struct ContentView: View {
     
     private func decideOpacity(_ index: Int) -> Double {
         if (tapped && index != correctAnswer) {
+            print("index: \(index), tapped: \(tapped), now it happens!")
             return 0.25
         }
         return 1
     }
     
-    private func askQuestion() {
+    private func anotherRound() {
         tapped = false
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
