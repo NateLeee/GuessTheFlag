@@ -15,7 +15,13 @@ struct ContentView: View {
     @State private var showingScore = false
     @State private var scoreTitle = ""
     @State private var alertMsg = ""
+    
+    
     @State private var score: Int = 0
+    
+    @State private var controlArray = [true, true, true]
+    @State private var indexShouldRotate: Int? = nil
+    
     
     var body: some View {
         ZStack {
@@ -34,39 +40,53 @@ struct ContentView: View {
                 
                 ForEach(0..<3) { index in
                     Button(action: {
-                        // Action here
                         self.flagTapped(index)
                     }) {
                         FlagImage(countryName: self.countries[index])
+                            .opacity(self.indexShouldRotate == index ? 1 : 0.25)
+                            .rotation3DEffect(Angle(degrees: self.indexShouldRotate == index ? 360 : 0), axis: (x: 0, y: 1, z: 0))
+                            .animation(Animation.default)
                     }
+                }
+                
+                Text("Current Score: \(score)")
+                    .foregroundColor(.white)
+                
+                Button("Shuffle") {
+                    self.askQuestion()
                 }
                 
                 Spacer()
             }
         }
         .alert(isPresented: self.$showingScore) { () -> Alert in
-            Alert(title: Text("\(self.scoreTitle)"), message: Text("\(alertMsg)"), dismissButton: .default(Text("Continue")) {
-                self.askQuestion()
-                })
+            Alert(title: Text("\(self.scoreTitle)"), message: Text("\(alertMsg)"), dismissButton: .default(Text("Continue")))
+                
         }
     }
     
     private func flagTapped(_ number: Int) {
+        controlArray = [false, false, false]
+        controlArray[correctAnswer] = true
+        
+        indexShouldRotate = correctAnswer
+        
         if number == correctAnswer {
-            scoreTitle = "✅Correct"
             score += 1
-            alertMsg = "Yay, and your score is \(score)."
         } else {
             scoreTitle = "🚫Wrong"
             // Tell them which country it is of
             alertMsg = "Oops, it's the flag of \(countries[number])."
+            showingScore = true
         }
-        showingScore = true
     }
     
     private func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        
+        controlArray = [true, true, true]
+        indexShouldRotate = nil
     }
 }
 
