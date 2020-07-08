@@ -13,6 +13,7 @@ struct ContentView: View {
         "Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"
         ].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
+    @State private var animationAmount = 0.0
     
     @State private var showingAlert = false
     @State private var alertTitle = ""
@@ -39,11 +40,15 @@ struct ContentView: View {
                 
                 ForEach(0..<3) { index in
                     Button(action: {
-                        self.flagTapped(index)
+                        withAnimation(.easeOut(duration: 1.5)) {
+                            self.animationAmount += 360
+                            self.flagTapped(index)
+                        }
+                        
                     }) {
                         FlagImage(countryName: self.countries[index])
+                            .rotation3DEffect(.degrees(self.animationAmount), axis: (x: 0, y: 1, z: 0))
                             .opacity(self.determineOpacity(index: index))
-                            .animation(.easeOut(duration: 1.5))
                     }
                 }
                 
@@ -87,6 +92,13 @@ struct ContentView: View {
         } else {
             return 0.25
         }
+    }
+    
+    private func determineDegree(_ index: Int) -> Double {
+        if (index == correctAnswer) {
+            return 360
+        }
+        return 0
     }
     
     private func anotherRound() {
