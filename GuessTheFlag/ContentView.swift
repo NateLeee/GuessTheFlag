@@ -9,7 +9,9 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
+    @State private var countries = [
+        "Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"
+        ].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
     
     @State private var showingAlert = false
@@ -18,7 +20,7 @@ struct ContentView: View {
     
     @State private var score: Int = 0
     
-    @State private var tapped = false
+    @State private var shouldOverrideOpacity = true
     
     var body: some View {
         ZStack {
@@ -40,10 +42,8 @@ struct ContentView: View {
                         self.flagTapped(index)
                     }) {
                         FlagImage(countryName: self.countries[index])
-                            .opacity(self.decideOpacity(index))
-                            .animation(Animation.default)
-                            .rotation3DEffect(Angle(degrees: self.correctAnswer == index ? 360 : 0), axis: (x: 0, y: 1, z: 0))
-                            .animation(Animation.default)
+                            .opacity(self.determineOpacity(index: index))
+                            .animation(.easeOut(duration: 1.5))
                     }
                 }
                 
@@ -62,11 +62,15 @@ struct ContentView: View {
     }
     
     private func flagTapped(_ number: Int) {
-        tapped = true
+        shouldOverrideOpacity = false
         
         if number == correctAnswer {
             score += 1
-            anotherRound()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                self.anotherRound()
+            }
+            
         } else {
             alertTitle = "🚫Wrong"
             alertMsg = "Oops, it's the flag of \(countries[number])."
@@ -74,18 +78,21 @@ struct ContentView: View {
         }
     }
     
-    private func decideOpacity(_ index: Int) -> Double {
-        if (tapped && index != correctAnswer) {
-            print("index: \(index), tapped: \(tapped), now it happens!")
+    private func determineOpacity(index: Int) -> Double {
+        if (shouldOverrideOpacity) {
+            return 1
+        }
+        if (index == correctAnswer) {
+            return 1
+        } else {
             return 0.25
         }
-        return 1
     }
     
     private func anotherRound() {
-        tapped = false
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        shouldOverrideOpacity = true
     }
 }
 
