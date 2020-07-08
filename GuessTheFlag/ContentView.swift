@@ -12,16 +12,13 @@ struct ContentView: View {
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
     
-    @State private var showingScore = false
-    @State private var scoreTitle = ""
+    @State private var showingAlert = false
+    @State private var alertTitle = ""
     @State private var alertMsg = ""
-    
     
     @State private var score: Int = 0
     
-    @State private var controlArray = [true, true, true]
-    @State private var indexShouldRotate: Int? = nil
-    
+    @State private var tapped = false
     
     var body: some View {
         ZStack {
@@ -43,8 +40,8 @@ struct ContentView: View {
                         self.flagTapped(index)
                     }) {
                         FlagImage(countryName: self.countries[index])
-                            .opacity(self.indexShouldRotate == index ? 1 : 0.25)
-                            .rotation3DEffect(Angle(degrees: self.indexShouldRotate == index ? 360 : 0), axis: (x: 0, y: 1, z: 0))
+                            .opacity(self.decideOpacity(index))
+                            .rotation3DEffect(Angle(degrees: self.correctAnswer == index ? 360 : 0), axis: (x: 0, y: 1, z: 0))
                             .animation(Animation.default)
                     }
                 }
@@ -52,41 +49,41 @@ struct ContentView: View {
                 Text("Current Score: \(score)")
                     .foregroundColor(.white)
                 
-                Button("Shuffle") {
-                    self.askQuestion()
-                }
-                
                 Spacer()
             }
         }
-        .alert(isPresented: self.$showingScore) { () -> Alert in
-            Alert(title: Text("\(self.scoreTitle)"), message: Text("\(alertMsg)"), dismissButton: .default(Text("Continue")))
-                
+        .alert(isPresented: self.$showingAlert) { () -> Alert in
+            Alert(title: Text("\(self.alertTitle)"), message: Text("\(alertMsg)"), dismissButton: .default(Text("Continue")) {
+                self.askQuestion()
+                })
+            
         }
     }
     
     private func flagTapped(_ number: Int) {
-        controlArray = [false, false, false]
-        controlArray[correctAnswer] = true
-        
-        indexShouldRotate = correctAnswer
+        tapped = true
         
         if number == correctAnswer {
             score += 1
+            askQuestion()
         } else {
-            scoreTitle = "🚫Wrong"
-            // Tell them which country it is of
+            alertTitle = "🚫Wrong"
             alertMsg = "Oops, it's the flag of \(countries[number])."
-            showingScore = true
+            showingAlert = true
         }
     }
     
+    private func decideOpacity(_ index: Int) -> Double {
+        if (tapped && index != correctAnswer) {
+            return 0.25
+        }
+        return 1
+    }
+    
     private func askQuestion() {
+        tapped = false
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
-        
-        controlArray = [true, true, true]
-        indexShouldRotate = nil
     }
 }
 
