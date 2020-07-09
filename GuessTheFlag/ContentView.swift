@@ -13,7 +13,6 @@ struct ContentView: View {
         "Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"
         ].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
-    @State private var animationAmount = 0.0
     
     @State private var showingAlert = false
     @State private var alertTitle = ""
@@ -21,7 +20,8 @@ struct ContentView: View {
     
     @State private var score: Int = 0
     
-    @State private var shouldOverrideOpacity = true
+    @State private var rotationArray = [0.0, 0, 0]
+    @State private var opacityArray: [Double] = [1, 1, 1]
     
     var body: some View {
         ZStack {
@@ -43,9 +43,8 @@ struct ContentView: View {
                         self.flagTapped(index)
                     }) {
                         FlagImage(countryName: self.countries[index])
-                            .rotation3DEffect(.degrees(self.animationAmount), axis: (x: 0, y: 1, z: 0))
-                            .opacity(self.determineOpacity(index: index))
-                            .animation(.default)
+                            .opacity(self.opacityArray[index])
+                            .rotation3DEffect(.degrees(self.rotationArray[index]), axis: (x: 0, y: 1, z: 0))
                     }
                 }
                 
@@ -65,7 +64,13 @@ struct ContentView: View {
     }
     
     private func flagTapped(_ number: Int) {
-        shouldOverrideOpacity = false
+        
+        withAnimation {
+            rotationArray[correctAnswer] = 360
+            for i in 0 ..< opacityArray.count {
+                opacityArray[i] = i == correctAnswer ? 1 : 0.25
+            }
+        }
         
         if number == correctAnswer {
             score += 1
@@ -81,28 +86,11 @@ struct ContentView: View {
         }
     }
     
-    private func determineOpacity(index: Int) -> Double {
-        if (shouldOverrideOpacity) {
-            return 1
-        }
-        if (index == correctAnswer) {
-            return 1
-        } else {
-            return 0.25
-        }
-    }
-    
-    private func determineDegree(_ index: Int) -> Double {
-        if (index == correctAnswer) {
-            return 360
-        }
-        return 0
-    }
-    
     private func anotherRound() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
-        shouldOverrideOpacity = true
+        rotationArray = [0.0, 0, 0]
+        opacityArray = [1, 1, 1]
     }
 }
 
