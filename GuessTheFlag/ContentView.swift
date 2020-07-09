@@ -40,20 +40,18 @@ struct ContentView: View {
                 
                 ForEach(0..<3) { index in
                     Button(action: {
-                        withAnimation(.easeOut(duration: 1.5)) {
-                            self.animationAmount += 360
-                            self.flagTapped(index)
-                        }
-                        
+                        self.flagTapped(index)
                     }) {
                         FlagImage(countryName: self.countries[index])
                             .rotation3DEffect(.degrees(self.animationAmount), axis: (x: 0, y: 1, z: 0))
                             .opacity(self.determineOpacity(index: index))
+                            .animation(.default)
                     }
                 }
                 
                 Text("Current Score: \(score)")
                     .foregroundColor(.white)
+                    .padding(.horizontal)
                 
                 Spacer()
             }
